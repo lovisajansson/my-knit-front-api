@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import Button from 'react-bootstrap/Button';
+import Button from "react-bootstrap/Button";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 function KnittingCalculator() {
     const [gaugeInPattern, setGaugeInPattern] = useState("");
@@ -8,6 +9,7 @@ function KnittingCalculator() {
     const [result, setResult] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+
     const handleClick = async () => {
         setLoading(true);
         setError(null);
@@ -17,10 +19,6 @@ function KnittingCalculator() {
             const response = await fetch(
                 `/adjust-stitches?patternGauge=${gaugeInPattern}&patternStitches=${stitchesInPattern}&myGauge=${myGauge}`
             );
-
-            if (!response.ok) {
-                throw new Error("Något gick fel med API-anropet");
-            }
 
             const data = await response.json();
             setResult(data);
@@ -32,50 +30,61 @@ function KnittingCalculator() {
     };
 
     return (
-        <div style={{ padding: "2rem", fontFamily: "sans-serif" }}>
-            <h1>Knitting Input Test</h1>
-            <div>
-                <label></label>
-                Mönstrets stickfasthet:
+        <div className="container mt-5" style={{ maxWidth: "500px" }}>
+            <h2 className="mb-4 text-center">Knitting Calculator</h2>
+
+            <div className="mb-3">
+                <label className="form-label">Mönstrets stickfasthet:</label>
                 <input
-                    type="text"
+                    type="number"
+                    className="form-control"
                     value={gaugeInPattern}
                     onChange={(e) => setGaugeInPattern(e.target.value)}
-                    style={{ marginLeft: "0.5rem" }}
                 />
-
-                <label>
-                    Antalet maskor i mönstret:
-                    <input
-                        type="text"
-                        value={stitchesInPattern}
-                        onChange={(e) => setStitchesInPattern(e.target.value)}
-                        style={{ marginLeft: "0.5rem" }}
-                    />
-                </label>
-                <label>
-                    Min stickfasthet:
-                    <input
-                        type="text"
-                        value={myGauge}
-                        onChange={(e) => setMyGauge(e.target.value)}
-                        style={{ marginLeft: "0.5rem" }}
-                    />
-                </label>
             </div>
-            <Button variant="contained" color="primary" onClick={handleClick}>
-                Calculate
+
+            <div className="mb-3">
+                <label className="form-label">Antalet maskor i mönstret:</label>
+                <input
+                    type="number"
+                    className="form-control"
+                    value={stitchesInPattern}
+                    onChange={(e) => setStitchesInPattern(e.target.value)}
+                />
+            </div>
+
+            <div className="mb-3">
+                <label className="form-label">Min stickfasthet:</label>
+                <input
+                    type="number"
+                    className="form-control"
+                    value={myGauge}
+                    onChange={(e) => setMyGauge(e.target.value)}
+                />
+            </div>
+
+            <Button
+                variant="primary"
+                className="w-100 mb-3"
+                onClick={handleClick}
+                disabled={loading}
+            >
+                {loading ? "Beräknar..." : "Beräkna"}
             </Button>
 
-            {error && <p style={{ color: "red" }}>{error}</p>}
+            {error && <p className="text-danger">{error}</p>}
+
             {result && (
-                <ul>
-                    {Object.entries(result).map(([key, value]) => (
-                        <li key={key}>
-                            {key}: {value}
-                        </li>
-                    ))}
-                </ul>
+                <div className="mt-3 p-3 border rounded bg-light">
+                    <h5>Resultat:</h5>
+                    <ul className="mb-0">
+                        {Object.entries(result).map(([key, value]) => (
+                            <li key={key}>
+                                <strong>{key}:</strong> {value}
+                            </li>
+                        ))}
+                    </ul>
+                </div>
             )}
         </div>
     );
