@@ -9,6 +9,10 @@ function KnittingCalculator() {
     const [result, setResult] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const API_BASE =
+        import.meta.env.MODE === "development"
+            ? "/adjust-stitches" // Vite dev proxy
+            : "https://my-knit-calc-api.onrender.com/adjust-stitches"; // Prod API
 
     const handleClick = async () => {
         setLoading(true);
@@ -17,7 +21,7 @@ function KnittingCalculator() {
 
         try {
             const response = await fetch(
-                `/adjust-stitches?patternGauge=${gaugeInPattern}&patternStitches=${stitchesInPattern}&myGauge=${myGauge}`
+                `${API_BASE}?patternGauge=${gaugeInPattern}&patternStitches=${stitchesInPattern}&myGauge=${myGauge}`
             );
 
             const data = await response.json();
